@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="SDATweb.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SDATweb"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="SDAT.web">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop Kind="Base"/>
+    </Window.SystemBackdrop>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="32"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- title bar -->
+
+        <Grid x:Name="AppTitleBar" Grid.Row="0">
+            <Image Source="Assets/WebLogo.png"
+           HorizontalAlignment="Left" 
+           Width="16" Height="16" 
+           Margin="8,0"/>
+            <TextBlock x:Name="AppTitleTextBlock" Text="TarskyTGI SDAT Web"
+               TextWrapping="NoWrap"
+               Style="{StaticResource CaptionTextBlockStyle}" 
+               VerticalAlignment="Center"
+               Margin="28,0,0,0"/>
+        </Grid>
+        
+        <!-- window -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Style="{StaticResource AccentButtonStyle}">Build</Button>
+            <Button Click="NewPage">New page</Button>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2">
+            <ListBox x:Name="lb_pages">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Width="512">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Width="448"></TextBox>
+                                <Button Width="64">📩</Button>
+                            </StackPanel>
+                            <TextBox Height="128" AcceptsReturn="True" TextWrapping="Wrap" 
+                                 Text="&lt;!DOCTYPE html&gt;&#xD;&#xA;&lt;html&gt;&#xD;&#xA;&lt;head&gt;&#xD;&#xA;    &lt;title&gt;Sample Page&lt;/title&gt;&#xD;&#xA;&lt;/head&gt;&#xD;&#xA;&lt;body&gt;&#xD;&#xA;    &lt;h1&gt;Welcome to My HTML Page&lt;/h1&gt;&#xD;&#xA;    &lt;p&gt;This is a sample paragraph with proper line breaks.&lt;/p&gt;&#xD;&#xA;&lt;/body&gt;&#xD;&#xA;&lt;/html&gt;&#xD;&#xA;" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</Window>
