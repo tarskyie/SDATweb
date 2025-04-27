@@ -38,6 +38,7 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Style="{StaticResource AccentButtonStyle}">Build</Button>
             <Button Click="NewPage">New page</Button>
+            <TextBox x:Name="urlBox" Width="100" Text="http://localhost:5000" />
         </StackPanel>
         
         <StackPanel Grid.Row="2">
@@ -47,7 +48,7 @@
                         <StackPanel Width="512">
                             <StackPanel Orientation="Horizontal">
                                 <TextBox Width="448"></TextBox>
-                                <Button Width="64">📩</Button>
+                                <Button Width="64" Click="SendRequest">📩</Button>
                             </StackPanel>
                             <TextBox Height="128" AcceptsReturn="True" TextWrapping="Wrap" 
                                  Text="&lt;!DOCTYPE html&gt;&#xD;&#xA;&lt;html&gt;&#xD;&#xA;&lt;head&gt;&#xD;&#xA;    &lt;title&gt;Sample Page&lt;/title&gt;&#xD;&#xA;&lt;/head&gt;&#xD;&#xA;&lt;body&gt;&#xD;&#xA;    &lt;h1&gt;Welcome to My HTML Page&lt;/h1&gt;&#xD;&#xA;    &lt;p&gt;This is a sample paragraph with proper line breaks.&lt;/p&gt;&#xD;&#xA;&lt;/body&gt;&#xD;&#xA;&lt;/html&gt;&#xD;&#xA;" />

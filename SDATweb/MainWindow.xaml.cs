@@ -1,26 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using System.Net.Http;
+using System.Text;
 
 namespace SDATweb
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
         public MainWindow()
@@ -33,6 +18,52 @@ namespace SDATweb
         private void NewPage(object sender, RoutedEventArgs e)
         {
             lb_pages.Items.Add(1);
+        }
+
+        private void SendRequest(object sender, RoutedEventArgs e)
+        {
+            Button sendButton = sender as Button;
+
+            if (sendButton != null)
+            {
+                StackPanel parentPanel = sendButton.Parent as StackPanel;
+
+                if (parentPanel != null)
+                {
+                    TextBox smallerTextBox = parentPanel.Children[0] as TextBox;
+                    StackPanel outerPanel = parentPanel.Parent as StackPanel;
+                    TextBox largerTextBox = outerPanel.Children[1] as TextBox;
+
+                    if (smallerTextBox != null && largerTextBox != null)
+                    {
+                        largerTextBox.Text = "Waiting for response...";
+                        sendHTTP(smallerTextBox.Text, largerTextBox);
+                    }
+                }
+            }
+        }
+        
+        private async void sendHTTP(string query, TextBox htmlBox)
+        {
+            string url = urlBox.Text;
+            string inputData = query;
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    StringContent content = new StringContent(inputData, Encoding.UTF8, "text/plain");
+
+                    HttpResponseMessage response = await client.PostAsync(url, content);
+
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    htmlBox.Text = responseString;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+            }
         }
     }
 }
