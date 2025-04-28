@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml.Media;
+using System.Diagnostics;
 
 namespace SDATweb
 {
@@ -13,6 +14,7 @@ namespace SDATweb
         private List<string> pagesContent = new List<string>();
         private List<string> pagesName = new List<string>();
         HttpClient client = new HttpClient();
+        private const string edgePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
 
         public MainWindow()
         {
@@ -272,6 +274,22 @@ namespace SDATweb
             pagesContent.Clear();
             pagesName.Clear();
             lb_pages.Items.Clear();
+        }
+
+        private void OpenDirectory(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo();
+            psi.FileName = @"c:\windows\explorer.exe";
+            psi.Arguments = "site";
+            Process.Start(psi);
+        }
+
+        private void OpenIndex(object sender, RoutedEventArgs e)
+        {
+            var psi = new ProcessStartInfo();
+            psi.FileName = edgePath;
+            psi.Arguments = System.Environment.CurrentDirectory + "/site/index.html";
+            Process.Start(psi);
         }
     }
 }

@@ -37,8 +37,10 @@
         <!-- window -->
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Style="{StaticResource AccentButtonStyle}" Click="BuildWebsite">Build</Button>
+            <Button Click="OpenIndex">Open in Edge</Button>
             <Button Click="NewPage">New page</Button>
             <Button Click="ClearItems">Clear</Button>
+            <Button Click="OpenDirectory">Open folder</Button>
             <TextBox x:Name="nameBox" Width="256" Text="Website" PlaceholderText="Website Name" />
             <TextBox x:Name="urlBox" Width="256" Text="http://localhost:5000" />
         </StackPanel>
