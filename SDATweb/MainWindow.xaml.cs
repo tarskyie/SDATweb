@@ -13,7 +13,6 @@ namespace SDATweb
     {
         private List<string> pagesContent = new List<string>();
         private List<string> pagesName = new List<string>();
-        HttpClient client = new HttpClient();
         private const string edgePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
 
         public MainWindow()
@@ -53,7 +52,7 @@ namespace SDATweb
                 {
                     TextBox smallerTextBox = parentPanel.Children[0] as TextBox;
                     StackPanel outerPanel = parentPanel.Parent as StackPanel;
-                    TextBox largerTextBox = outerPanel.Children[1] as TextBox;
+                    TextBox largerTextBox = outerPanel.Children[2] as TextBox;
 
                     if (smallerTextBox != null && largerTextBox != null)
                     {
@@ -69,7 +68,7 @@ namespace SDATweb
             string url = urlBox.Text;
             string inputData = query;
 
-            using (client)
+            using (HttpClient client = new HttpClient())
             {
                 try
                 {
@@ -78,6 +77,7 @@ namespace SDATweb
                     HttpResponseMessage response = await client.PostAsync(url, content);
 
                     string responseString = await response.Content.ReadAsStringAsync();
+                    htmlBox.Text = "Received response";
                     htmlBox.Text = responseString;
                 }
                 catch (Exception ex)
