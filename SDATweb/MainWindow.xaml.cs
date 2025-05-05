@@ -6,6 +6,11 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml.Media;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 namespace SDATweb
 {
@@ -13,6 +18,7 @@ namespace SDATweb
     {
         private List<string> pagesContent = new List<string>();
         private List<string> pagesName = new List<string>();
+        private List<StorageFile> assets = new List<StorageFile>();
         private const string edgePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
 
         public MainWindow()
@@ -290,6 +296,50 @@ namespace SDATweb
             psi.FileName = edgePath;
             psi.Arguments = System.Environment.CurrentDirectory + "/site/index.html";
             Process.Start(psi);
+        }
+
+        private async void SelectIcon(object sender, RoutedEventArgs e)
+        {
+            StorageFile file = await selectFile([".png", ".svg", ".ico", ".jpg", ".jpeg"]);
+            if (file != null)
+            {
+                iconBox.Text=file.Path;
+            }
+        }
+
+        private void ClearAssets(object sender, RoutedEventArgs e)
+        {
+            lb_assets.Items.Clear();
+            assets.Clear();
+        }
+
+        private async void AddAsset(object sender, RoutedEventArgs e)
+        {
+            StorageFile file = await selectFile(["*"]);
+            if (file != null)
+            {
+                lb_assets.Items.Add(file.Name);
+                assets.Add(file);
+            }
+        }
+
+        private async Task<StorageFile> selectFile(List<string> filterFormats)
+        {
+            var picker = new FileOpenPicker();
+
+            IntPtr hWnd = WindowNative.GetWindowHandle(this);
+            InitializeWithWindow.Initialize(picker, hWnd);
+
+            picker.ViewMode = PickerViewMode.List;
+            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+
+            foreach (string format in filterFormats)
+            {
+                picker.FileTypeFilter.Add(format);
+            }
+
+            StorageFile file = await picker.PickSingleFileAsync();
+            return file;
         }
     }
 }

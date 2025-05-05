@@ -16,9 +16,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32"/>
-            <RowDefinition Height="32"/>
+            <RowDefinition Height="48"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="536"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
         <!-- title bar -->
 
@@ -35,17 +39,19 @@
         </Grid>
         
         <!-- window -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <!-- top panel -->
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal">
             <Button Style="{StaticResource AccentButtonStyle}" Click="BuildWebsite">Build</Button>
             <Button Click="OpenIndex">Open in Edge</Button>
             <Button Click="NewPage">New page</Button>
             <Button Click="ClearItems">Clear</Button>
             <Button Click="OpenDirectory">Open folder</Button>
-            <TextBox x:Name="nameBox" Width="256" Text="Website" PlaceholderText="Website Name" />
-            <TextBox x:Name="urlBox" Width="256" Text="http://localhost:5000" />
+            <TextBox x:Name="nameBox" Width="256" Height="32" VerticalAlignment="Center" Text="Website" PlaceholderText="Website Name" />
+            <TextBox x:Name="urlBox" Width="256" Height="32" VerticalAlignment="Center" Text="http://localhost:5000" />
         </StackPanel>
-
-        <ListBox x:Name="lb_pages" Grid.Row="2">
+           
+        <!-- pages list -->
+        <ListBox x:Name="lb_pages" Grid.Row="2" Grid.Column="0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Width="512">
@@ -61,5 +67,19 @@
             </ListBox.ItemTemplate>
         </ListBox>
         
+        <!-- right side -->
+        <StackPanel Grid.Row="2" Grid.Column="1" Padding="20,10,0,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Width="40" VerticalAlignment="Center">Icon</TextBlock>
+                <TextBox x:Name="iconBox" Width="256"/>
+                <Button Margin="10, 0, 0, 0" Click="SelectIcon">📂</Button>
+            </StackPanel>
+            <CheckBox Content="First page is index.html"/>
+            <StackPanel Orientation="Horizontal">
+                <Button Click="AddAsset">Add</Button>
+                <Button Click="ClearAssets">Clear assets</Button>
+            </StackPanel>
+            <ListBox x:Name="lb_assets" Width="512" Height="512" HorizontalAlignment="Left"/>
+        </StackPanel>
     </Grid>
 </Window>
