@@ -48,17 +48,17 @@ namespace SDATweb
 
         private void SendRequest(object sender, RoutedEventArgs e)
         {
-            Button sendButton = sender as Button;
+            Button sendButton = (Button)sender;
 
             if (sendButton != null)
             {
-                StackPanel parentPanel = sendButton.Parent as StackPanel;
+                StackPanel parentPanel = (StackPanel)sendButton.Parent;
 
                 if (parentPanel != null)
                 {
-                    TextBox smallerTextBox = parentPanel.Children[0] as TextBox;
-                    StackPanel outerPanel = parentPanel.Parent as StackPanel;
-                    TextBox largerTextBox = outerPanel.Children[2] as TextBox;
+                    TextBox smallerTextBox = (TextBox)parentPanel.Children[0];
+                    StackPanel outerPanel = (StackPanel)parentPanel.Parent;
+                    TextBox largerTextBox = (TextBox)outerPanel.Children[2];
 
                     if (smallerTextBox != null && largerTextBox != null)
                     {
@@ -96,6 +96,7 @@ namespace SDATweb
         private void BuildWebsite(object sender, RoutedEventArgs e)
         {
             clearSite();
+            copyAssets();
 
             string deployFolder = "site";
             try
@@ -122,6 +123,20 @@ namespace SDATweb
             for (int i = 0; i < pagesContent.Count; i++)
             {
                 string pageHtml = pagesContent[i];
+
+                // Look for the <head> to insert favicon
+                int headIndex = pageHtml.IndexOf("<head>", StringComparison.OrdinalIgnoreCase);
+                if (headIndex >= 0)
+                {
+                    headIndex += "<head>".Length;
+                    pageHtml = pageHtml.Insert(headIndex, "<link rel='icon' type='image/png' href='assets/icon.png'>");
+                }
+                else
+                {
+                    // If no <head> tag was found, append the favicon at the end
+                    pageHtml += "<link rel='icon' type='image/png' href='assets/icon.png'>";
+                }
+
                 // Look for the <body> tag to insert the nav
                 int bodyIndex = pageHtml.IndexOf("<body>", StringComparison.OrdinalIgnoreCase);
                 if (bodyIndex >= 0)
@@ -150,7 +165,7 @@ namespace SDATweb
             var indexContent = new System.Text.StringBuilder();
             indexContent.AppendLine("<!DOCTYPE html>");
             indexContent.AppendLine("<html>");
-            indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title></head>");
+            indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title><link rel='icon' type='image/png' href='assets/icon.png'></head>");
             indexContent.AppendLine("<body>");
             indexContent.AppendLine(navHtml);
             indexContent.AppendLine($"<h1>Welcome to the {nameBox.Text} Home Page</h1>");
@@ -177,7 +192,7 @@ namespace SDATweb
             var notFoundContent = new System.Text.StringBuilder();
             notFoundContent.AppendLine("<!DOCTYPE html>");
             notFoundContent.AppendLine("<html>");
-            notFoundContent.AppendLine("<head><title>404 Not Found</title></head>");
+            notFoundContent.AppendLine("<head><title>404 Not Found</title><link rel='icon' type='image/png' href='assets/icon.png'></head>");
             notFoundContent.AppendLine("<body>");
             notFoundContent.AppendLine(navHtml);
             notFoundContent.AppendLine("<h1>404 - Page Not Found</h1>");
@@ -196,6 +211,41 @@ namespace SDATweb
             }
         }
 
+        private void copyAssets() 
+        {
+            string deployFolder = "site";
+            string assetsFolder = "assets";
+            try
+            {
+                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(deployFolder, assetsFolder));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating folder {deployFolder}/{assetsFolder}: {ex.Message}");
+                return;
+            }
+            foreach (var asset in assets)
+            {
+                string destPath = System.IO.Path.Combine(deployFolder, assetsFolder, asset.Name);
+                try
+                {
+                    File.Copy(asset.Path, destPath, true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error copying file {asset.Name}: {ex.Message}");
+                }
+            }
+            // copy icon
+            try
+            {
+                File.Copy(iconBox.Text, System.IO.Path.Combine(deployFolder, assetsFolder, "icon.png"), true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error copying file {iconBox.Text}: {ex.Message}");
+            }
+        }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -209,7 +259,7 @@ namespace SDATweb
 
                 if (parent is ListBoxItem listBoxItem)
                 {
-                    ListBox listBox = ItemsControl.ItemsControlFromItemContainer(listBoxItem) as ListBox;
+                    ListBox listBox = (ListBox)ItemsControl.ItemsControlFromItemContainer(listBoxItem);
 
                     if (listBox != null)
                     {
@@ -239,7 +289,7 @@ namespace SDATweb
 
                 if (parent is ListBoxItem listBoxItem)
                 {
-                    ListBox listBox = ItemsControl.ItemsControlFromItemContainer(listBoxItem) as ListBox;
+                    ListBox listBox = (ListBox)ItemsControl.ItemsControlFromItemContainer(listBoxItem);
 
                     if (listBox != null)
                     {
@@ -300,7 +350,7 @@ namespace SDATweb
 
         private async void SelectIcon(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await selectFile([".png", ".svg", ".ico", ".jpg", ".jpeg"]);
+            StorageFile file = await selectFile([".png"]);
             if (file != null)
             {
                 iconBox.Text=file.Path;
