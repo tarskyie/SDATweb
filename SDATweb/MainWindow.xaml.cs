@@ -1,7 +1,6 @@
 using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.Net.Http;
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.UI.Xaml.Media;
@@ -18,6 +17,9 @@ namespace SDATweb
     {
         private const string edgePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
         private WebsiteDataModel websiteDataModel = new WebsiteDataModel();
+        private FilePickerService filePickerService = new FilePickerService();
+        private HttpRequestSender requestSender = new HttpRequestSender();
+        private SystemProcessLauncher processLauncher = new SystemProcessLauncher();
 
         public MainWindow()
         {
@@ -45,7 +47,7 @@ namespace SDATweb
             websiteDataModel.AddNewPage(contentOfThePage, nameOfThePage);
         }
 
-        private void SendRequest(object sender, RoutedEventArgs e)
+        private async void SendRequest(object sender, RoutedEventArgs e)
         {
             Button sendButton = (Button)sender;
 
@@ -62,32 +64,8 @@ namespace SDATweb
                     if (smallerTextBox != null && largerTextBox != null)
                     {
                         largerTextBox.Text = "Waiting for response...";
-                        sendHTTP(smallerTextBox.Text, largerTextBox);
+                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, smallerTextBox.Text);
                     }
-                }
-            }
-        }
-        
-        private async void sendHTTP(string query, TextBox htmlBox)
-        {
-            string url = urlBox.Text;
-            string inputData = query;
-
-            using (HttpClient client = new HttpClient())
-            {
-                try
-                {
-                    StringContent content = new StringContent(inputData, Encoding.UTF8, "text/plain");
-
-                    HttpResponseMessage response = await client.PostAsync(url, content);
-
-                    string responseString = await response.Content.ReadAsStringAsync();
-                    htmlBox.Text = "Received response";
-                    htmlBox.Text = responseString;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
         }
@@ -280,7 +258,7 @@ namespace SDATweb
                         int index = listBox.ItemContainerGenerator.IndexFromContainer(listBoxItem);
                         if (index < websiteDataModel.PagesContent.Count)
                         {
-                            websiteDataModel.PagesContent[index] = textBox.Text;
+                            websiteDataModel.UpdatePageContent(index, textBox.Text);
                         }
                         else
                         {
@@ -310,7 +288,7 @@ namespace SDATweb
                         int index = listBox.ItemContainerGenerator.IndexFromContainer(listBoxItem);
                         if (index < websiteDataModel.PagesName.Count)
                         {
-                            websiteDataModel.PagesName[index] = textBox.Text;
+                            websiteDataModel.UpdatePageName(index, textBox.Text);
                         }
                         else
                         {
@@ -340,30 +318,23 @@ namespace SDATweb
         private void ClearItems(object sender, RoutedEventArgs e)
         {
             clearSite();
-            websiteDataModel.PagesContent.Clear();
-            websiteDataModel.PagesName.Clear();
+            websiteDataModel.ClearAll();
             lb_pages.Items.Clear();
         }
 
         private void OpenDirectory(object sender, RoutedEventArgs e)
         {
-            var psi = new ProcessStartInfo();
-            psi.FileName = @"c:\windows\explorer.exe";
-            psi.Arguments = "site";
-            Process.Start(psi);
+            processLauncher.GenericStartProcess("explorer.exe", System.Environment.CurrentDirectory + "/site");
         }
 
         private void OpenIndex(object sender, RoutedEventArgs e)
         {
-            var psi = new ProcessStartInfo();
-            psi.FileName = edgePath;
-            psi.Arguments = System.Environment.CurrentDirectory + "/site/index.html";
-            Process.Start(psi);
+            processLauncher.GenericStartProcess(edgePath, System.Environment.CurrentDirectory + "/site/index.html");
         }
 
         private async void SelectIcon(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await selectFile([".png"]);
+            StorageFile file = await filePickerService.SelectFile([".png"]);
             if (file != null)
             {
                 iconBox.Text=file.Path;
@@ -373,36 +344,17 @@ namespace SDATweb
         private void ClearAssets(object sender, RoutedEventArgs e)
         {
             lb_assets.Items.Clear();
-            websiteDataModel.Assets.Clear();
+            websiteDataModel.ClearAssets();
         }
 
         private async void AddAsset(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await selectFile(["*"]);
+            StorageFile file = await filePickerService.SelectFile(["*"]);
             if (file != null)
             {
                 lb_assets.Items.Add(file.Name);
-                websiteDataModel.Assets.Add(file);
+                websiteDataModel.AddAsset(file);
             }
-        }
-
-        private async Task<StorageFile> selectFile(List<string> filterFormats)
-        {
-            var picker = new FileOpenPicker();
-
-            IntPtr hWnd = WindowNative.GetWindowHandle(this);
-            InitializeWithWindow.Initialize(picker, hWnd);
-
-            picker.ViewMode = PickerViewMode.List;
-            picker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-
-            foreach (string format in filterFormats)
-            {
-                picker.FileTypeFilter.Add(format);
-            }
-
-            StorageFile file = await picker.PickSingleFileAsync();
-            return file;
         }
     }
 }

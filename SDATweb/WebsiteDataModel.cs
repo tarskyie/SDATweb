@@ -11,7 +11,7 @@ namespace SDATweb
     {
         public List<string> PagesContent { get; } = new List<string>();
         public List<string> PagesName { get; } = new List<string>();
-        public List<Windows.Storage.StorageFile> Assets { get; } = new List<Windows.Storage.StorageFile>(); // Note: using fully qualified name
+        public List<Windows.Storage.StorageFile> Assets { get; } = new List<Windows.Storage.StorageFile>();
 
         public void AddNewPage(string content, string name)
         {
