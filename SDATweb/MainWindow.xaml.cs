@@ -16,10 +16,8 @@ namespace SDATweb
 {
     public sealed partial class MainWindow : Window
     {
-        private List<string> pagesContent = new List<string>();
-        private List<string> pagesName = new List<string>();
-        private List<StorageFile> assets = new List<StorageFile>();
         private const string edgePath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
+        private WebsiteDataModel websiteDataModel = new WebsiteDataModel();
 
         public MainWindow()
         {
@@ -31,7 +29,7 @@ namespace SDATweb
         private void NewPage(object sender, RoutedEventArgs e)
         {
             lb_pages.Items.Add(1);
-            pagesContent.Add("""
+            string contentOfThePage = """
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -42,8 +40,9 @@ namespace SDATweb
                     <p>This is a sample paragraph with proper line breaks.</p>
                 </body>
                 </html>
-                """);
-            pagesName.Add("Sample Page");
+                """;
+            string nameOfThePage = "Sample Page";
+            websiteDataModel.AddNewPage(contentOfThePage, nameOfThePage);
         }
 
         private void SendRequest(object sender, RoutedEventArgs e)
@@ -112,17 +111,17 @@ namespace SDATweb
             // a navigation menu listing all pages
             var navLinks = new System.Text.StringBuilder();
             navLinks.AppendLine("<nav>");
-            for (int i = 0; i < pagesContent.Count; i++)
+            for (int i = 0; i < websiteDataModel.PagesContent.Count; i++)
             {
-                navLinks.AppendLine($"<a href='{pagesName[i].Replace(" ", "")}{i}.html'>{pagesName[i]}</a>");
+                navLinks.AppendLine($"<a href='{websiteDataModel.PagesName[i].Replace(" ", "")}{i}.html'>{websiteDataModel.PagesName[i]}</a>");
             }
             navLinks.AppendLine("</nav>");
             string navHtml = navLinks.ToString();
 
             // write each page with the navigation menu injected
-            for (int i = 0; i < pagesContent.Count; i++)
+            for (int i = 0; i < websiteDataModel.PagesContent.Count; i++)
             {
-                string pageHtml = pagesContent[i];
+                string pageHtml = websiteDataModel.PagesContent[i];
 
                 // Look for the <head> to insert favicon
                 int headIndex = pageHtml.IndexOf("<head>", StringComparison.OrdinalIgnoreCase);
@@ -150,7 +149,7 @@ namespace SDATweb
                     pageHtml += navHtml;
                 }
 
-                string pageFileName = System.IO.Path.Combine(deployFolder, $"{pagesName[i].Replace(" ", "")}{i}.html");
+                string pageFileName = System.IO.Path.Combine(deployFolder, $"{websiteDataModel.PagesName[i].Replace(" ", "")}{i}.html");
                 try
                 {
                     System.IO.File.WriteAllText(pageFileName, pageHtml);
@@ -163,7 +162,7 @@ namespace SDATweb
 
             // Create an index.html that serves as the landing page with a list of links
             var indexContent = new System.Text.StringBuilder();
-            if (indexToggle.IsChecked == false || pagesContent.Count == 0)
+            if (indexToggle.IsChecked == false || websiteDataModel.PagesContent.Count == 0)
             {
                 indexContent.AppendLine("<!DOCTYPE html>");
                 indexContent.AppendLine("<html>");
@@ -172,9 +171,9 @@ namespace SDATweb
                 indexContent.AppendLine(navHtml);
                 indexContent.AppendLine($"<h1>Welcome to the {nameBox.Text} Home Page</h1>");
                 indexContent.AppendLine("<ul>");
-                for (int i = 0; i < pagesContent.Count; i++)
+                for (int i = 0; i < websiteDataModel.PagesContent.Count; i++)
                 {
-                    indexContent.AppendLine($"<li><a href='{pagesName[i].Replace(" ", "")}{i}.html'>{pagesName[i]}</a></li>");
+                    indexContent.AppendLine($"<li><a href='{websiteDataModel.PagesName[i].Replace(" ", "")}{i}.html'>{websiteDataModel.PagesName[i]}</a></li>");
                 }
                 indexContent.AppendLine("</ul>");
                 indexContent.AppendLine("</body>");
@@ -184,7 +183,7 @@ namespace SDATweb
             {
                 indexContent.AppendLine("<!DOCTYPE html>");
                 indexContent.AppendLine("<html>");
-                indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title><link rel='icon' type='image/png' href='assets/icon.png'><meta http-equiv='refresh' content=\"0; url='{pagesName[0].Replace(" ", "")}0.html'\" /></head>");
+                indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title><link rel='icon' type='image/png' href='assets/icon.png'><meta http-equiv='refresh' content=\"0; url='{websiteDataModel.PagesName[0].Replace(" ", "")}0.html'\" /></head>");
                 indexContent.AppendLine("<body>");
                 indexContent.AppendLine(navHtml);
                 indexContent.AppendLine($"<h1>Welcome to the {nameBox.Text} Home Page</h1>");
@@ -238,7 +237,7 @@ namespace SDATweb
                 Console.WriteLine($"Error creating folder {deployFolder}/{assetsFolder}: {ex.Message}");
                 return;
             }
-            foreach (var asset in assets)
+            foreach (var asset in websiteDataModel.Assets)
             {
                 string destPath = System.IO.Path.Combine(deployFolder, assetsFolder, asset.Name);
                 try
@@ -279,13 +278,13 @@ namespace SDATweb
                     {
                         // real action here
                         int index = listBox.ItemContainerGenerator.IndexFromContainer(listBoxItem);
-                        if (index < pagesContent.Count)
+                        if (index < websiteDataModel.PagesContent.Count)
                         {
-                            pagesContent[index] = textBox.Text;
+                            websiteDataModel.PagesContent[index] = textBox.Text;
                         }
                         else
                         {
-                            pagesContent.Add(textBox.Text);
+                            websiteDataModel.PagesContent.Add(textBox.Text);
                         }
                     }
                 }
@@ -309,13 +308,13 @@ namespace SDATweb
                     {
                         // real action here
                         int index = listBox.ItemContainerGenerator.IndexFromContainer(listBoxItem);
-                        if (index < pagesName.Count)
+                        if (index < websiteDataModel.PagesName.Count)
                         {
-                            pagesName[index] = textBox.Text;
+                            websiteDataModel.PagesName[index] = textBox.Text;
                         }
                         else
                         {
-                            pagesName.Add(textBox.Text);
+                            websiteDataModel.PagesName.Add(textBox.Text);
                         }
                     }
                 }
@@ -341,8 +340,8 @@ namespace SDATweb
         private void ClearItems(object sender, RoutedEventArgs e)
         {
             clearSite();
-            pagesContent.Clear();
-            pagesName.Clear();
+            websiteDataModel.PagesContent.Clear();
+            websiteDataModel.PagesName.Clear();
             lb_pages.Items.Clear();
         }
 
@@ -374,7 +373,7 @@ namespace SDATweb
         private void ClearAssets(object sender, RoutedEventArgs e)
         {
             lb_assets.Items.Clear();
-            assets.Clear();
+            websiteDataModel.Assets.Clear();
         }
 
         private async void AddAsset(object sender, RoutedEventArgs e)
@@ -383,7 +382,7 @@ namespace SDATweb
             if (file != null)
             {
                 lb_assets.Items.Add(file.Name);
-                assets.Add(file);
+                websiteDataModel.Assets.Add(file);
             }
         }
 
