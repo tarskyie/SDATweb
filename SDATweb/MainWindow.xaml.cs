@@ -163,22 +163,36 @@ namespace SDATweb
 
             // Create an index.html that serves as the landing page with a list of links
             var indexContent = new System.Text.StringBuilder();
-            indexContent.AppendLine("<!DOCTYPE html>");
-            indexContent.AppendLine("<html>");
-            indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title><link rel='icon' type='image/png' href='assets/icon.png'></head>");
-            indexContent.AppendLine("<body>");
-            indexContent.AppendLine(navHtml);
-            indexContent.AppendLine($"<h1>Welcome to the {nameBox.Text} Home Page</h1>");
-            indexContent.AppendLine("<ul>");
-            for (int i = 0; i < pagesContent.Count; i++)
+            if (indexToggle.IsChecked == false || pagesContent.Count == 0)
             {
-                indexContent.AppendLine($"<li><a href='{pagesName[i].Replace(" ", "")}{i}.html'>{pagesName[i]}</a></li>");
+                indexContent.AppendLine("<!DOCTYPE html>");
+                indexContent.AppendLine("<html>");
+                indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title><link rel='icon' type='image/png' href='assets/icon.png'></head>");
+                indexContent.AppendLine("<body>");
+                indexContent.AppendLine(navHtml);
+                indexContent.AppendLine($"<h1>Welcome to the {nameBox.Text} Home Page</h1>");
+                indexContent.AppendLine("<ul>");
+                for (int i = 0; i < pagesContent.Count; i++)
+                {
+                    indexContent.AppendLine($"<li><a href='{pagesName[i].Replace(" ", "")}{i}.html'>{pagesName[i]}</a></li>");
+                }
+                indexContent.AppendLine("</ul>");
+                indexContent.AppendLine("</body>");
+                indexContent.AppendLine("</html>");
             }
-            indexContent.AppendLine("</ul>");
-            indexContent.AppendLine("</body>");
-            indexContent.AppendLine("</html>");
+            else
+            {
+                indexContent.AppendLine("<!DOCTYPE html>");
+                indexContent.AppendLine("<html>");
+                indexContent.AppendLine($"<head><title>{nameBox.Text} Home</title><link rel='icon' type='image/png' href='assets/icon.png'><meta http-equiv='refresh' content=\"0; url='{pagesName[0].Replace(" ", "")}0.html'\" /></head>");
+                indexContent.AppendLine("<body>");
+                indexContent.AppendLine(navHtml);
+                indexContent.AppendLine($"<h1>Welcome to the {nameBox.Text} Home Page</h1>");
+                indexContent.AppendLine("</body>");
+                indexContent.AppendLine("</html>");
+            }
 
-            string indexFileName = System.IO.Path.Combine(deployFolder, "index.html");
+                string indexFileName = System.IO.Path.Combine(deployFolder, "index.html");
             try
             {
                 System.IO.File.WriteAllText(indexFileName, indexContent.ToString());
