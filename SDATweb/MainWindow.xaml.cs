@@ -20,6 +20,7 @@ namespace SDATweb
         private FilePickerService filePickerService = new FilePickerService();
         private HttpRequestSender requestSender = new HttpRequestSender();
         private SystemProcessLauncher processLauncher = new SystemProcessLauncher();
+        private const string systemPrompt = "Only answer in html, do not comment. Always start with <html> and end with </html>.";
 
         public MainWindow()
         {
@@ -64,7 +65,7 @@ namespace SDATweb
                     if (smallerTextBox != null && largerTextBox != null)
                     {
                         largerTextBox.Text = "Waiting for response...";
-                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, smallerTextBox.Text);
+                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, smallerTextBox.Text, systemPrompt);
                     }
                 }
             }
