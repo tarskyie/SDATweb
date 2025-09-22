@@ -335,7 +335,8 @@ namespace SDATweb
 
         private async void SelectIcon(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await filePickerService.SelectFile([".png"]);
+            IntPtr hWnd = WindowNative.GetWindowHandle(this);
+            StorageFile file = await filePickerService.SelectFile([".png"], hWnd);
             if (file != null)
             {
                 iconBox.Text=file.Path;
@@ -350,7 +351,8 @@ namespace SDATweb
 
         private async void AddAsset(object sender, RoutedEventArgs e)
         {
-            StorageFile file = await filePickerService.SelectFile(["*"]);
+            IntPtr hWnd = WindowNative.GetWindowHandle(this);
+            StorageFile file = await filePickerService.SelectFile(["*"], hWnd);
             if (file != null)
             {
                 lb_assets.Items.Add(file.Name);

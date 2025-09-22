@@ -11,11 +11,10 @@ namespace SDATweb
 {
     public class FilePickerService
     {
-        public async Task<StorageFile> SelectFile(List<string> filterFormats)
+        public async Task<StorageFile> SelectFile(List<string> filterFormats, IntPtr hWnd)
         {
             var picker = new FileOpenPicker();
 
-            IntPtr hWnd = WindowNative.GetWindowHandle(this);
             InitializeWithWindow.Initialize(picker, hWnd);
 
             picker.ViewMode = PickerViewMode.List;
