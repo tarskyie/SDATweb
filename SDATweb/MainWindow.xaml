@@ -47,7 +47,8 @@
             <Button Click="ClearItems">Clear</Button>
             <Button Click="OpenDirectory">Open folder</Button>
             <TextBox x:Name="nameBox" Width="256" Height="32" VerticalAlignment="Center" Text="Website" PlaceholderText="Website Name" />
-            <TextBox x:Name="urlBox" Width="256" Height="32" VerticalAlignment="Center" Text="http://127.0.0.1:8080/v1/chat/completions" />
+            <TextBox x:Name="urlBox" Width="256" Height="32" VerticalAlignment="Center" Text="http://127.0.0.1:8080/v1/chat/completions" PlaceholderText="API url" />
+            <TextBox x:Name="KeyBox" Height="32" VerticalAlignment="Center" Text="none" PlaceholderText="API key" />
         </StackPanel>
            
         <!-- pages list -->
