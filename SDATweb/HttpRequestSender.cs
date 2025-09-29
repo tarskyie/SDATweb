@@ -9,7 +9,7 @@ namespace SDATweb
 {
     public class HttpRequestSender
     {
-        public async Task<string> SendHTTP(string url, string prompt, string systemPrompt)
+        public async Task<string> SendHTTP(string url, string apiKey, string prompt, string systemPrompt)
         {
             var payload = new
             {
@@ -26,6 +26,8 @@ namespace SDATweb
             {
                 try
                 {
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
                     string jsonPayload = JsonSerializer.Serialize(payload);
                     var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync(url, content);
@@ -36,7 +38,7 @@ namespace SDATweb
                         .GetProperty("choices")[0]
                         .GetProperty("message")
                         .GetProperty("content")
-                        .GetString();
+                        .GetString() ?? string.Empty;
                     return assistantReply;
                 }
                 catch (HttpRequestException httpEx)

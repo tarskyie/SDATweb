@@ -21,12 +21,28 @@ namespace SDATweb
         private HttpRequestSender requestSender = new HttpRequestSender();
         private SystemProcessLauncher processLauncher = new SystemProcessLauncher();
         private const string systemPrompt = "Only answer in html, do not comment. Always start with <html> and end with </html>.";
+        private string apiKey = "";
+        private string apiUrl = "http://127.0.0.1:8080/v1/chat/completions";
+        private string appName = "My Website";
 
         public MainWindow()
         {
+            string[] args = Environment.GetCommandLineArgs();
+
+            for (int i = 0; i < args.Length; ++i)
+            {
+                if (args[i] == "-key" && i + 1 < args.Length) { apiKey = args[i + 1]; }
+                if (args[i] == "-url" && i + 1 < args.Length) { apiUrl = args[i + 1]; }
+                if (args[i] == "-name" && i + 1 < args.Length) { appName = args[i + 1]; }
+            }
+
             this.InitializeComponent();
             this.ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
+
+            KeyBox.Text = apiKey;
+            urlBox.Text = apiUrl;
+            nameBox.Text = appName;
         }
 
         private void NewPage(object sender, RoutedEventArgs e)
@@ -65,7 +81,7 @@ namespace SDATweb
                     if (smallerTextBox != null && largerTextBox != null)
                     {
                         largerTextBox.Text = "Waiting for response...";
-                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, smallerTextBox.Text, systemPrompt);
+                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, KeyBox.Text, smallerTextBox.Text, systemPrompt);
                     }
                 }
             }
