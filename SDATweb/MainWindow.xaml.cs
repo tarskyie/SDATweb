@@ -20,7 +20,7 @@ namespace SDATweb
         private FilePickerService filePickerService = new FilePickerService();
         private HttpRequestSender requestSender = new HttpRequestSender();
         private SystemProcessLauncher processLauncher = new SystemProcessLauncher();
-        private const string systemPrompt = "Only answer in html, do not comment. Always start with <html> and end with </html>.";
+        private const string systemPrompt = "Only answer in html, do not comment. Always start with <html> and end with </html>. Available assets: ";
         private string apiKey = "";
         private string apiUrl = "http://127.0.0.1:8080/v1/chat/completions";
         private string appName = "My Website";
@@ -81,7 +81,7 @@ namespace SDATweb
                     if (smallerTextBox != null && largerTextBox != null)
                     {
                         largerTextBox.Text = "Waiting for response...";
-                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, KeyBox.Text, smallerTextBox.Text, systemPrompt);
+                        largerTextBox.Text = await requestSender.SendHTTP(urlBox.Text, KeyBox.Text, smallerTextBox.Text, systemPrompt + FileNames());
                     }
                 }
             }
@@ -341,7 +341,7 @@ namespace SDATweb
 
         private void OpenDirectory(object sender, RoutedEventArgs e)
         {
-            processLauncher.GenericStartProcess("explorer.exe", System.Environment.CurrentDirectory + "/site");
+            processLauncher.GenericStartProcess("explorer.exe", System.Environment.CurrentDirectory + "\\site");
         }
 
         private void OpenIndex(object sender, RoutedEventArgs e)
@@ -374,6 +374,17 @@ namespace SDATweb
                 lb_assets.Items.Add(file.Name);
                 websiteDataModel.AddAsset(file);
             }
+        }
+
+        private string FileNames()
+        {
+            string res = String.Empty;
+
+            foreach (var item in lb_assets.Items) {
+                res += "assets\\" + item.ToString() + ";";
+            }
+
+            return res;
         }
     }
 }
